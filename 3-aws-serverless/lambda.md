@@ -284,6 +284,7 @@ aws lambda invoke --function-name hello-world --cli-binary-format raw-in-base64-
 
 ## AWS Lambda Layers
 
+- Maximum 5 layers per Lambda function
 - Custom Runtimes for Lambda, example:
     - C++ [https://github.com/awslabs/aws-lambda-cpp](aws-lambda-cpp)
     - Rust [https://github.com/awslabs/aws-lambda-rust-runtime](aws-lambda-rust)
