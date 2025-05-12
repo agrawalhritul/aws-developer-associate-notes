@@ -47,7 +47,7 @@ AWS Lambda language support:
 ## AWS Lambda configuration
 
 - Timeout: default 3 seconds, max of 300s (Note: new limit 15 minutes) - Environment variables
-- Allocated memory (128M to 3G)
+- Allocated memory (128M to 10G)
 - Ability to deploy within a VPC + assign security groups
 - IAM execution role must be attached to the Lambda function
 
