@@ -21,7 +21,7 @@ Why use AWS Lambda?
 - Integrations with the entire AWS Stack
 - Integrated with many programming languages
 - Easy monitoring through AWS CloudWatch
-- Easy to get more resources per functions (up to 3GB of RAM)
+- Easy to get more resources per functions (up to 10GB of RAM)
 - Increasing RAM will also improve CPU and network
 
 AWS Lambda language support:
