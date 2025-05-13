@@ -199,9 +199,49 @@
 
 ### Throttling
 
-- DynamoDB indexes can cause throttling
-    - GSI: **If writes are throttled in case of a GSI, the main table is throttled as well!** This can happen even if the WCU on the main table is just fine
-    - LSI: uses the same WCU and RCU on the main table, can not throttle the main table
+📊 1. Local Secondary Index (LSI)
+✅ LSI Reads
+Aspect	Detail
+Scope	Only available within the same partition key
+Read Capacity	Uses table's RCU (shared pool)
+Performance	Same performance as querying base table
+Throttling Impact	Can throttle the base table if many LSI queries exhaust RCUs
+Use Case	Sort/filter data differently for a single partition (e.g., UserId + Timestamp, UserId + Score)
+
+✅ LSI Writes
+Aspect	Detail
+When triggered	When writing/modifying an item that affects the indexed (sort key) attribute
+Write Capacity	Uses base table's WCU only
+Extra cost	Additional WCU cost for index update (still from shared pool)
+Throttling Impact	Heavy writes (especially on sort key) can throttle both table & LSI since they share WCU
+Index Consistency	Always strongly consistent, like the base table
+
+🌍 2. Global Secondary Index (GSI)
+✅ GSI Reads
+Aspect	Detail
+Scope	Can span across all partition keys
+Read Capacity	Uses GSI’s own RCU (can be provisioned or on-demand)
+Performance	Slightly more overhead than base table reads
+Throttling Impact	Only affects the GSI; does not throttle the base table
+Index Consistency	Eventually consistent by default; strongly consistent not supported
+
+✅ GSI Writes
+Aspect	Detail
+When triggered	When writing to base table items that contain indexed attributes
+Write Capacity	Consumes WCU on both the base table and the GSI
+Write Path	DynamoDB writes to base table, then to GSI in the background
+Throttling Impact	⚠️ If GSI is throttled, the entire base table write fails, even if the base table has enough WCU
+Index Consistency	Eventually consistent — GSI may lag behind base table briefly
+
+🧠 Visual Mental Model
+Operation Type	LSI	GSI
+Index scope	Same partition	Global (any partition)
+RCU/WCU ownership	Shares with base table	Has its own RCU/WCU
+Addable post-creation	❌ No	✅ Yes
+Write failure on throttling	Affects base table directly	Can block base table write
+Read throttling	Affects table’s RCU pool	Affects GSI only
+Update cost	Write to table affects index	Write to table + index = double cost
+Consistency	Strongly consistent	Eventually consistent only
 
 ## DynamoDB Concurrency Model
 
